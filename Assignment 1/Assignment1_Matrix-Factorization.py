@@ -1,15 +1,7 @@
-
-"""
-  Created on Fri Sep 18 21:09:10 2015
-  
-  @author: Wojtek Kowalczyk
-  
-  This script demonstrates how implement the "global average rating" recommender
-  and validate its accuracy with help of 5-fold cross-validation.
-  
-  """
-
 import numpy as np
+import timeit
+
+start = timeit.default_timer()
 
 #load data
 #ratings=read_data("ratings.dat")
@@ -21,26 +13,14 @@ for line in f:
 f.close()
 ratings=np.array(ratings)
 
-"""
-  Alternatively, instead of reading data file line by line you could use the Numpy
-  genfromtxt() function. For example:
-  
-  ratings = np.genfromtxt("ratings.dat", usecols=(0, 1, 2), delimiter='::', dtype='int')
-  
-  will create an array with 3 columns.
-  
-  Additionally, you may now save the rating matrix into a binary file
-  and later reload it very quickly: study the np.save and np.load functions.
-
-"""
-
-
 #split data into 5 train and test folds
 nfolds=5
 
 #allocate memory for results:
-err_train=np.zeros(nfolds)
-err_test=np.zeros(nfolds)
+RMSE_train=np.zeros(nfolds)
+RMSE_test=np.zeros(nfolds)
+MAE_train=np.zeros(nfolds)
+MAE_test=np.zeros(nfolds)
 
 #to make sure you are able to repeat results, set the random seed to something:
 np.random.seed(17)
@@ -86,13 +66,14 @@ for fold in range(nfolds):
 
   train_prediction_ratings = np.array(train_prediction_ratings)
 
-  err_train[fold]=np.sqrt(np.mean((train[:,2]-train_prediction_ratings)**2))
+  RMSE_train[fold]=np.sqrt(np.mean((train[:,2]-train_prediction_ratings)**2))
+  MAE_train[fold]=np.mean(np.abs(train[:,2]-train_prediction_ratings))
 
   #Use the features to make predictions on the test set and cut off ratings lower than 1 and higher than 5.
   test_prediction_ratings = []
 
   for i in range(len(test)):
-    prediction = np.dot(User_features_matrix[train[i,0]-1],Movie_features_matrix[:,train[i,1]-1])
+    prediction = np.dot(User_features_matrix[test[i,0]-1],Movie_features_matrix[:,test[i,1]-1])
     if prediction < 1:
       test_prediction_ratings.append(1)
     elif prediction > 5:
@@ -102,15 +83,21 @@ for fold in range(nfolds):
 
   test_prediction_ratings = np.array(test_prediction_ratings)
 
-  err_test[fold]=np.sqrt(np.mean((test[:,2]-test_prediction_ratings)**2))
+  RMSE_test[fold]=np.sqrt(np.mean((test[:,2]-test_prediction_ratings)**2))
+  MAE_test[fold]=np.mean(np.abs(test[:,2]-test_prediction_ratings))
  
   #print errors:
-  print("Fold " + str(fold) + ": RMSE_train=" + str(err_train[fold]) + "; RMSE_test=" + str(err_test[fold]))
+  print("Fold " + str(fold) + ": RMSE_train=" + str(RMSE_train[fold]) + "; RMSE_test=" + str(RMSE_test[fold]))
+  print("Fold " + str(fold) + ": MAE_train=" + str(MAE_train[fold]) + "; MAE_test=" + str(MAE_test[fold]))
 
 #print the final conclusion:
 print("\n")
-print("Mean error on TRAIN: " + str(np.mean(err_train)))
-print("Mean error on  TEST: " + str(np.mean(err_test)))
+print("Mean error of RMSE on TRAIN: " + str(np.mean(RMSE_train)))
+print("Mean error of RMSE on TEST: " + str(np.mean(RMSE_test)))
+print("\n")
+print("Mean error of MAE on TRAIN: " + str(np.mean(MAE_train)))
+print("Mean error of MAE on TEST: " + str(np.mean(MAE_test)))
 
-# Just in case you need linear regression: help(np.linalg.lstsq) will tell you
-# how to do it!
+stop = timeit.default_timer()
+print("\n")
+print('Time: ', stop - start)
