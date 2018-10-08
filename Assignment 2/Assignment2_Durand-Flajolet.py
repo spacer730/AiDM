@@ -14,6 +14,11 @@ def trailing_zeroes(num):
     p += 1
   return p
 
+def alpha_m(m):
+  a = -1+2**(-1/m)
+  b = math.gamma(-1/m)
+  return (a*b/math.log(2))**-m
+
 def estimate_cardinality(values, k):
   """Estimates the number of unique elements in the input set values.
 
@@ -28,12 +33,9 @@ def estimate_cardinality(values, k):
     bucket = h & (num_buckets - 1) # Mask out the k least significant bits as bucket ID
     bucket_hash = h >> k
     max_zeroes[bucket] = max(max_zeroes[bucket], trailing_zeroes(bucket_hash))
-  return 2 ** (float(sum(max_zeroes)) / num_buckets) * num_buckets * alpha_m(num_buckets)
+  return 2 ** (float(sum(max_zeroes)) / num_buckets) * num_buckets * 0.79402 #alpha_m(num_buckets)
 
-def alpha_m(m):
-  a = -1+2**(-1/m)
-  b = math.gamma(-1/m)
-  return (a*b/math.log(2))**-m
+print([100000/estimate_cardinality([random.random() for i in range(100000)], 10) for j in range(10)])
 
 """
 for i in range(10):
