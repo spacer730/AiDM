@@ -1,6 +1,5 @@
 import scipy.sparse as sparse
 import numpy as np
-#import random
 import math
 import itertools
 import sys
