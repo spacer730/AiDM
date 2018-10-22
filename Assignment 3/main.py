@@ -88,7 +88,7 @@ if __name__ == '__main__':
   print('Reading in data and making binary matrix ...')
   OG_binary_matrix = make_bin_matrix(path)
 
-  print('Making signature matrix')
+  print('Making signature matrix ...')
   sign_matrix = make_sign_matrix(OG_binary_matrix, 100)
 
   print('Finding candidate pairs and checking the similarities with the signature matrix ...')
