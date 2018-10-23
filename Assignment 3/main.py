@@ -68,9 +68,9 @@ def controle_bin_matrix(pairs, req_sim, matrix):
   matrix = matrix.toarray()
   finalpairs = []
   for i in range(len(pairs)):
-    sum_val = np.sum(matrix[:, pairs[i][0]] & matrix[:, pairs[i][1]])
-    sim_val = np.sum(matrix[:, pairs[i][0]] | matrix[:, pairs[i][1]])
-    jac_sim = float(sum_val) / float(sim_val)
+    intersec = np.sum(matrix[:, pairs[i][0]] & matrix[:, pairs[i][1]])
+    union = np.sum(matrix[:, pairs[i][0]] | matrix[:, pairs[i][1]])
+    jac_sim = float(intersec) / float(union)
     
     if jac_sim > req_sim:
       finalpairs.append([pairs[i][0],pairs[i][1]])
